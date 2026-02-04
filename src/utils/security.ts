@@ -1,8 +1,18 @@
 import CryptoJS from 'crypto-js';
+import exifr from 'exifr';
 
-// 1. Metadata Stripper (The "Washer")
-export const stripMetadata = async (file: File): Promise<File> => {
-  return new Promise((resolve) => {
+export interface PrivacyAudit {
+  foundMetadata: boolean;
+  tagsRemoved: string[];
+}
+
+// 1. THE SCRUBBER (The "Washer") - Re-renders image to destroy all metadata headers
+export const scrubEvidence = async (file: File): Promise<{ cleanFile: File; audit: PrivacyAudit }> => {
+  const originalTags = await exifr.parse(file).catch(() => null);
+  const foundMetadata = !!originalTags;
+  const tagsRemoved = originalTags ? Object.keys(originalTags) : [];
+
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
@@ -11,17 +21,18 @@ export const stripMetadata = async (file: File): Promise<File> => {
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0);
+        if (!ctx) return reject(new Error("Canvas context failed"));
+
+        ctx.drawImage(img, 0, 0);
         
         canvas.toBlob((blob) => {
           if (blob) {
-            const newFile = new File([blob], "clean_" + file.name, {
-              type: file.type,
-              lastModified: Date.now(),
+            const cleanFile = new File([blob], `tars_sanitized_${Date.now()}.webp`, {
+              type: "image/webp",
             });
-            resolve(newFile);
+            resolve({ cleanFile, audit: { foundMetadata, tagsRemoved } });
           }
-        }, file.type);
+        }, "image/webp", 0.8);
       };
       img.src = event.target?.result as string;
     };
@@ -29,55 +40,24 @@ export const stripMetadata = async (file: File): Promise<File> => {
   });
 };
 
-// 2. Client-Side Encryption (The "Lock")
-// FIX: We now encrypt the Base64 string, not the raw binary.
-export const encryptFile = async (file: File, secretKey: string): Promise<Blob> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    
-    // Read as Data URL (Base64 String) instead of ArrayBuffer
-    reader.readAsDataURL(file); 
-    
-    reader.onload = () => {
-      const base64String = reader.result as string;
-      
-      // Encrypt the string
-      const encrypted = CryptoJS.AES.encrypt(base64String, secretKey).toString();
-      
-      // Save as a text file blob
-      const encryptedBlob = new Blob([encrypted], { type: 'text/plain' });
-      resolve(encryptedBlob);
-    };
-    reader.onerror = reject;
-  });
-};
+// 2. ENCRYPTION HELPERS
 export const encryptText = (text: string, secretKey: string): string => {
   return CryptoJS.AES.encrypt(text, secretKey).toString();
 };
-// 3. Client-Side Decryption (The "Key")
-export const decryptFile = async (encryptedUrl: string, secretKey: string): Promise<string> => {
-  try {
-    const response = await fetch(encryptedUrl);
-    
-    // Check if the fetch actually worked
-    if (!response.ok) throw new Error("Failed to fetch from IPFS");
-    
-    const encryptedText = await response.text();
 
-    // Debugging: Log what we got
-    console.log("Encrypted payload length:", encryptedText.length);
+export const encryptFile = async (file: File, secretKey: string): Promise<Blob> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file); 
+    reader.onload = () => {
+      const encrypted = CryptoJS.AES.encrypt(reader.result as string, secretKey).toString();
+      resolve(new Blob([encrypted], { type: 'text/plain' }));
+    };
+  });
+};
 
+// 3. DECRYPTION HELPER
+export const decryptData = (encryptedText: string, secretKey: string): string => {
     const bytes = CryptoJS.AES.decrypt(encryptedText, secretKey);
-    const originalBase64 = bytes.toString(CryptoJS.enc.Utf8);
-
-    if (!originalBase64.startsWith('data:image')) {
-      console.error("Decrypted output does not look like an image:", originalBase64.substring(0, 50));
-      throw new Error("Decryption failed: Invalid Key or Corrupted Data");
-    }
-
-    return originalBase64;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+    return bytes.toString(CryptoJS.enc.Utf8);
 };

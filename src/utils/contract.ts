@@ -1,18 +1,50 @@
-export const CONTRACT_ADDRESS = "0xc3f984489665c3c5CBF21eA9CC71d9ccA6Cf301C"; // Keep your address!
+export const CONTRACT_ADDRESS = "0xFf407d9Bc655C31C55e356edF0162D25e32FEA05"; // Keep your address!
 
 export const CONTRACT_ABI = [
+
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "admin",
+				"type": "address"
+			}
+		],
+		"name": "AuthorityVerified",
+		"type": "event"
+	},
 	{
 		"inputs": [
 			{
-				"internalType": "string",
-				"name": "_ipfsCid",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
 			}
 		],
-		"name": "submitReport",
+		"name": "flagReport",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "newRoot",
+				"type": "bytes32"
+			}
+		],
+		"name": "MerkleRootUpdated",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -61,12 +93,38 @@ export const CONTRACT_ABI = [
 	{
 		"inputs": [
 			{
+				"internalType": "bytes32",
+				"name": "_root",
+				"type": "bytes32"
+			}
+		],
+		"name": "setMerkleRoot",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_ipfsCid",
+				"type": "string"
+			}
+		],
+		"name": "submitReport",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "_id",
 				"type": "uint256"
 			}
 		],
-		"name": "flagReport",
+		"name": "verifyReport",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -85,6 +143,32 @@ export const CONTRACT_ABI = [
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "INITIAL_SCORE",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "merkleRoot",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
 			}
 		],
 		"stateMutability": "view",
@@ -182,14 +266,25 @@ export const CONTRACT_ABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
+				"internalType": "bytes32[]",
+				"name": "_proof",
+				"type": "bytes32[]"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_leaf",
+				"type": "bytes32"
 			}
 		],
-		"name": "verifyReport",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"name": "verifyAuthority",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ] as const;

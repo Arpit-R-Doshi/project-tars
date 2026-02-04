@@ -1,10 +1,14 @@
 'use client';
-
+import { generateMerkleRoot } from '../utils/zkp';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShieldCheck, EyeOff, Database, Zap } from 'lucide-react';
 
 export default function Home() {
+  useEffect(() => {
+  console.log("TARS ZK-ROOT:", generateMerkleRoot());
+}, []);
   const features = [
     { title: "Metadata Scrubbing", desc: "Automatic EXIF/GPS removal from all evidence.", icon: EyeOff },
     { title: "AES-256 Encryption", desc: "Client-side encryption ensures only authorities see data.", icon: ShieldCheck },

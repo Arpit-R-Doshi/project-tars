@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x5a4439d96A980F0Cb001Ed3B4df12AB5f00d845F"; // Keep your address!
+export const CONTRACT_ADDRESS = "0x2fD833aAB4978d87527b6209b3609507cBC7838A"; // Keep your address!
 
 export const CONTRACT_ABI = [
 	{
@@ -20,10 +20,44 @@ export const CONTRACT_ABI = [
 				"internalType": "address",
 				"name": "officer",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "action",
+				"type": "string"
 			}
 		],
 		"name": "AccessRecorded",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32[]",
+				"name": "_proof",
+				"type": "bytes32[]"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_leaf",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "_leafStr",
+				"type": "string"
+			}
+		],
+		"name": "castValidationVote",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -48,6 +82,11 @@ export const CONTRACT_ABI = [
 			{
 				"internalType": "string",
 				"name": "_leaf",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_action",
 				"type": "string"
 			}
 		],
@@ -83,19 +122,6 @@ export const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
-			}
-		],
-		"name": "verifyReport",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "getAllLogs",
 		"outputs": [
@@ -110,6 +136,11 @@ export const CONTRACT_ABI = [
 						"internalType": "address",
 						"name": "officer",
 						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
 					},
 					{
 						"internalType": "string",
@@ -155,6 +186,30 @@ export const CONTRACT_ABI = [
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "hasVoted",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"name": "logs",
@@ -168,6 +223,11 @@ export const CONTRACT_ABI = [
 				"internalType": "address",
 				"name": "officer",
 				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "action",
+				"type": "string"
 			},
 			{
 				"internalType": "string",
@@ -261,6 +321,11 @@ export const CONTRACT_ABI = [
 				"internalType": "bool",
 				"name": "flagged",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "approvalCount",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

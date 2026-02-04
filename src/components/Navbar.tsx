@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Shield, Upload, LayoutDashboard, Home } from 'lucide-react';
-import TrustScore from './TrustScore';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -45,7 +44,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <TrustScore />
+          {/* REMOVED TrustScore component from here */}
           <ConnectButton accountStatus="avatar" chainStatus="icon" showBalance={false} />
         </div>
       </div>

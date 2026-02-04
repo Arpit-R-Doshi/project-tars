@@ -1,7 +1,6 @@
-export const CONTRACT_ADDRESS = "0xFf407d9Bc655C31C55e356edF0162D25e32FEA05"; // Keep your address!
+export const CONTRACT_ADDRESS = "0x5a4439d96A980F0Cb001Ed3B4df12AB5f00d845F"; // Keep your address!
 
 export const CONTRACT_ABI = [
-
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -12,12 +11,18 @@ export const CONTRACT_ABI = [
 		"inputs": [
 			{
 				"indexed": true,
+				"internalType": "uint256",
+				"name": "reportId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
 				"internalType": "address",
-				"name": "admin",
+				"name": "officer",
 				"type": "address"
 			}
 		],
-		"name": "AuthorityVerified",
+		"name": "AccessRecorded",
 		"type": "event"
 	},
 	{
@@ -34,61 +39,22 @@ export const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
-		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"internalType": "bytes32",
-				"name": "newRoot",
-				"type": "bytes32"
-			}
-		],
-		"name": "MerkleRootUpdated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
 				"internalType": "uint256",
-				"name": "id",
+				"name": "_reportId",
 				"type": "uint256"
 			},
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "reporter",
-				"type": "address"
-			},
-			{
-				"indexed": false,
 				"internalType": "string",
-				"name": "ipfsCid",
+				"name": "_leaf",
 				"type": "string"
 			}
 		],
-		"name": "ReportSubmitted",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "newScore",
-				"type": "uint256"
-			}
-		],
-		"name": "ScoreUpdated",
-		"type": "event"
+		"name": "recordAccess",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -130,6 +96,41 @@ export const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "getAllLogs",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "reportId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "officer",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "officerLeaf",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct TarsRegistry.AccessLog[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -149,12 +150,33 @@ export const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "INITIAL_SCORE",
-		"outputs": [
+		"inputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "logs",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "reportId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "officer",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "officerLeaf",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
 				"type": "uint256"
 			}
 		],

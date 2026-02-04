@@ -51,7 +51,9 @@ export const encryptFile = async (file: File, secretKey: string): Promise<Blob> 
     reader.onerror = reject;
   });
 };
-
+export const encryptText = (text: string, secretKey: string): string => {
+  return CryptoJS.AES.encrypt(text, secretKey).toString();
+};
 // 3. Client-Side Decryption (The "Key")
 export const decryptFile = async (encryptedUrl: string, secretKey: string): Promise<string> => {
   try {

@@ -7,11 +7,12 @@ import { generateZKProof } from '../../utils/zkp';
 import { verifyShards } from '../../utils/security';
 import ReportCard from '../../components/ReportCard';
 import { 
-  ShieldAlert, Terminal, Lock, Key, Activity, 
-  SortAsc, Download, Filter, FileText
+  ShieldAlert, Terminal, Lock, Activity, 
+  SortAsc, Download, Filter
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { jsPDF } from 'jspdf';
+// removed pdf-lib import as it is no longer needed
 
 export default function AdminDashboard() {
   const { isConnected } = useAccount();
@@ -22,10 +23,10 @@ export default function AdminDashboard() {
   const [isVerifying, setIsVerifying] = useState(false);
   
   // --- Local State for Toggling Views ---
-  const [showLogsView, setShowLogsView] = useState(false); // Renamed to avoid prop conflict
+  const [showLogsView, setShowLogsView] = useState(false);
 
   // --- Sorting & Filtering State ---
-  const [logSortBy, setLogSortBy] = useState('TIME'); 
+  const [logSortBy, setLogSortBy] = useState<'TIME' | 'WALLET' | 'SECRET' | 'CASE'>('TIME'); 
   const [shards, setShards] = useState(['TARS', 'ALPHA', 'SECURITY', 'OMEGA', 'PROTOCOL']);
   const [isLogUnlocked, setIsLogUnlocked] = useState(false);
 
@@ -71,10 +72,33 @@ export default function AdminDashboard() {
   }, [superLogs, logSortBy]);
 
   // --- Official PDF Generator for Super Log ---
-  const downloadSuperLogPDF = () => {
-    // ... (PDF logic remains the same) ...
+  const downloadSuperLogPDF = async () => {
     if (!sortedLogs || sortedLogs.length === 0) return;
-    const doc = new jsPDF('l', 'mm', 'a4'); 
+
+    // 1. Declare Password ONCE
+    const HARDCODED_PASSWORD = "tars-audit-secure-2024";
+
+    const password = window.prompt("Enter PDF Password:", "");
+    if (!password || password !== HARDCODED_PASSWORD) {
+      alert("Incorrect password. PDF generation cancelled.");
+      return;
+    }
+
+    // 2. Initialize jsPDF with built-in Encryption
+    // This removes the need for pdf-lib entirely
+    const doc = new jsPDF({
+      orientation: 'l',
+      unit: 'mm',
+      format: 'a4',
+      encryption: {
+        userPassword: HARDCODED_PASSWORD,
+        ownerPassword: HARDCODED_PASSWORD,
+        userPermissions: ["print", "modify", "copy", "annot-forms"],
+        encryptionAlgorithm: "aes",
+        keyLength: 128
+      }
+    });
+
     doc.setFillColor(15, 15, 15);
     doc.rect(0, 0, 297, 35, 'F');
     doc.setTextColor(255, 255, 255);
@@ -93,7 +117,7 @@ export default function AdminDashboard() {
     doc.text("ACTION", 135, y);
     doc.text("SECRET IDENTIFIER", 175, y);
     doc.text("CASE ID", 260, y);
-    
+
     doc.setDrawColor(200, 200, 200);
     doc.line(15, y + 2, 282, y + 2);
 
@@ -105,18 +129,21 @@ export default function AdminDashboard() {
         if (y > 185) { doc.addPage('l', 'mm', 'a4'); y = 20; }
         const time = new Date(Number(log.timestamp) * 1000).toLocaleString();
         const wallet = `${log.officer.substring(0, 18)}...`;
+
+        // Explicit String conversion prevents TS argument errors
+        doc.text(String(time), 15, y);
+        doc.text(String(wallet), 65, y);
+        doc.text(String(log.action), 135, y);
+        doc.text(String(log.officerLeaf).substring(0, 30), 175, y);
         
-        doc.text(time, 15, y);
-        doc.text(wallet, 65, y);
-        doc.text(log.action.toString(), 135, y);
-        doc.text(log.officerLeaf.toString().substring(0, 30), 175, y);
         doc.setTextColor(0, 102, 204);
-        doc.text(`#${log.reportId.toString()}`, 260, y);
+        doc.text(`#${String(log.reportId)}`, 260, y);
         doc.setTextColor(0, 0, 0);
 
         y += 8;
     });
 
+    // 3. Simple Save (Already Encrypted)
     doc.save(`TARS-AUDIT-LOG-${Date.now()}.pdf`);
   };
 
@@ -129,12 +156,12 @@ export default function AdminDashboard() {
           <div className="flex justify-center mb-8"><Lock className="text-blue-500" size={32} /></div>
           <h2 className="text-2xl font-black text-center mb-8 tracking-tighter uppercase">Authority Login</h2>
           <input
-  type="password"
-  placeholder="Authority Secret..."
-  className="w-full bg-black border border-gray-800 p-4 rounded-2xl mb-4 font-mono text-sm outline-none focus:border-blue-500"
-  value={zkSecret}              // <-- bind the state here
-  onChange={(e) => setZkSecret(e.target.value)}
-/>
+            type="password"
+            placeholder="Authority Secret..."
+            className="w-full bg-black border border-gray-800 p-4 rounded-2xl mb-4 font-mono text-sm outline-none focus:border-blue-500"
+            value={zkSecret}
+            onChange={(e) => setZkSecret(e.target.value)}
+          />
           <button onClick={handleZKLogin} className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black tracking-widest text-xs transition-all">{isVerifying ? "VERIFYING..." : "EXECUTE ZK-AUTH"}</button>
         </motion.div>
       ) : (
@@ -147,7 +174,7 @@ export default function AdminDashboard() {
             </div>
             
             <button 
-                onClick={() => setShowLogsView(!showLogsView)} // Use local state
+                onClick={() => setShowLogsView(!showLogsView)} 
                 className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${showLogsView ? "bg-white text-black border-white" : "bg-red-900/10 border-red-900/40 text-red-500 hover:bg-red-900/20"}`}
             >
                 <ShieldAlert size={16} /> {showLogsView ? "Return to Cases" : "Open Super Log"}
@@ -158,7 +185,7 @@ export default function AdminDashboard() {
             {!showLogsView ? (
               <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
                 
-                {/* --- NEW DUMMY SORT/FILTER COMMAND BAR --- */}
+                {/* --- FILTER COMMAND BAR --- */}
                 <div className="glass-panel border border-gray-800 p-4 rounded-2xl flex flex-wrap items-center gap-6 shadow-xl sticky top-36 z-30">
                     <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-xl border border-gray-800">
                         <Filter size={14} className="text-gray-500" />
@@ -184,7 +211,6 @@ export default function AdminDashboard() {
                         </select>
                     </div>
                 </div>
-                {/* -------------------------------------- */}
 
                 <div className="max-w-4xl mx-auto">
                     {reportCount && Array.from({length: Number(reportCount)}).map((_, i) => {
@@ -235,20 +261,19 @@ export default function AdminDashboard() {
                     <p className="text-[11px] text-gray-400 uppercase font-black tracking-widest">Emergency Override Required</p>
                     <div className="grid gap-3">
                     {shards.map((shard, i) => (
-  <input
-    key={i}
-    type="password"
-    placeholder={`FRAG_0${i + 1}`}
-    className="w-full bg-black border border-red-900/20 p-4 rounded-2xl text-xs text-center font-mono outline-none focus:border-red-500 transition-all"
-    value={shard}   // <-- bind the current value from shards
-    onChange={(e) => {
-      const s = [...shards];
-      s[i] = e.target.value;
-      setShards(s);
-    }}
-  />
-))}
-
+                      <input
+                        key={i}
+                        type="password"
+                        placeholder={`FRAG_0${i + 1}`}
+                        className="w-full bg-black border border-red-900/20 p-4 rounded-2xl text-xs text-center font-mono outline-none focus:border-red-500 transition-all"
+                        value={shard}
+                        onChange={(e) => {
+                          const s = [...shards];
+                          s[i] = e.target.value;
+                          setShards(s);
+                        }}
+                      />
+                    ))}
                     </div>
                     <button onClick={unlockSuperLog} className="w-full bg-red-600 hover:bg-red-500 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-red-900/20">Execute Reconstruction</button>
                   </div>

@@ -94,8 +94,8 @@ export default function AdminDashboard() {
         userPassword: HARDCODED_PASSWORD,
         ownerPassword: HARDCODED_PASSWORD,
         userPermissions: ["print", "modify", "copy", "annot-forms"],
-        encryptionAlgorithm: "aes",
-        keyLength: 128
+        //encryptionAlgorithm: "aes",
+        //keyLength: 128
       }
     });
 

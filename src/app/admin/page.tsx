@@ -126,7 +126,7 @@ export default function AdminDashboard() {
     y += 10;
 
     sortedLogs.forEach((log: any) => {
-        if (y > 185) { doc.addPage('l', 'a4'); y = 20; } //addPage('l', 'mm', 'a4')
+        if (y > 185) { doc.addPage('l'); y = 20; } //addPage('l', 'mm', 'a4')
         const time = new Date(Number(log.timestamp) * 1000).toLocaleString();
         const wallet = `${log.officer.substring(0, 18)}...`;
 
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-5 gap-6 pb-4 text-[10px] font-black text-gray-600 uppercase tracking-widest border-b border-gray-800 px-4">
                         <span>Timestamp</span><span>Officer Wallet</span><span>Action</span><span>ZK Identifier</span><span className="text-right">Case ID</span>
                     </div>
-                    <div className="space-y-2 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                    <div className="space-y-2 max-h-125 overflow-y-auto pr-4 custom-scrollbar">
                         {sortedLogs.map((log: any, i: number) => (
                             <div key={i} className="grid grid-cols-5 gap-6 py-4 border-b border-gray-800/40 text-[11px] font-mono items-center hover:bg-red-500/5 px-4 rounded-xl transition-all">
                                 <span className="text-gray-500">{new Date(Number(log.timestamp)*1000).toLocaleString()}</span>

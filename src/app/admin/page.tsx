@@ -88,7 +88,7 @@ export default function AdminDashboard() {
     // This removes the need for pdf-lib entirely
     const doc = new jsPDF({
       orientation: 'l',
-      unit: 'mm',
+      //unit: 'mm',
       format: 'a4',
       encryption: {
         userPassword: HARDCODED_PASSWORD,
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
     y += 10;
 
     sortedLogs.forEach((log: any) => {
-        if (y > 185) { doc.addPage('l', 'mm', 'a4'); y = 20; }
+        if (y > 185) { doc.addPage('l', 'a4'); y = 20; } //addPage('l', 'mm', 'a4')
         const time = new Date(Number(log.timestamp) * 1000).toLocaleString();
         const wallet = `${log.officer.substring(0, 18)}...`;
 

@@ -40,7 +40,7 @@ export default function RootLayout({
              <ShadowOverlay /> 
              
              <Navbar />
-             <main className="flex-grow relative z-10">
+             <main className="grow relative z-10">
                {children}
              </main>
           </div>

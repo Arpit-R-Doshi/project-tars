@@ -126,7 +126,7 @@ export default function ReportCard({ id, zkSecret }: { id: number, zkSecret: str
       </div>
 
       {!dossier ? (
-        <div className="p-24 text-center space-y-5 bg-[radial-gradient(circle_at_center,_rgba(29,78,216,0.05)_0%,_transparent_70%)]">
+        <div className="p-24 text-center space-y-5 bg-[radial-gradient(circle_at_center,rgba(29,78,216,0.05)_0%,transparent_70%)]">
             <button 
                 onClick={handleDecryptAndLog} 
                 disabled={isActionLoading} 

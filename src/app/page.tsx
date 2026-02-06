@@ -29,7 +29,7 @@ export default function Home() {
           
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-6 leading-[0.9]">
             TRUSTLESS<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 animate-gradient bg-300%">INTEGRITY.</span>
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-500 via-purple-500 to-blue-500 animate-gradient bg-300%">INTEGRITY.</span>
           </h1>
           
           <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light">
